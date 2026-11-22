@@ -1,0 +1,117 @@
+supplier_id,supplier_name,commodity,order_date,promised_date,actual_date,po_value
+V01,Kestrel Machining GmbH,Machined parts,2026-01-21,2026-02-24,2026-02-22,225863
+V01,Kestrel Machining GmbH,Machined parts,2026-02-26,2026-04-01,2026-03-30,322176
+V01,Kestrel Machining GmbH,Machined parts,2026-03-31,2026-05-04,2026-05-02,243261
+V01,Kestrel Machining GmbH,Machined parts,2026-04-19,2026-05-23,2026-05-21,275328
+V01,Kestrel Machining GmbH,Machined parts,2026-04-22,2026-05-26,2026-05-25,203438
+V01,Kestrel Machining GmbH,Machined parts,2026-05-03,2026-06-06,2026-06-06,330354
+V01,Kestrel Machining GmbH,Machined parts,2026-08-08,2026-09-11,2026-09-09,269156
+V01,Kestrel Machining GmbH,Machined parts,2026-08-10,2026-09-13,2026-09-11,237669
+V01,Kestrel Machining GmbH,Machined parts,2026-08-21,2026-09-24,2026-09-24,253788
+V01,Kestrel Machining GmbH,Machined parts,2026-09-28,2026-11-01,2026-11-01,188938
+V02,Lindenhof Bearings AG,Bearings,2025-12-26,2026-01-23,2026-01-23,72713
+V02,Lindenhof Bearings AG,Bearings,2025-12-30,2026-01-27,2026-02-03,91909
+V02,Lindenhof Bearings AG,Bearings,2026-01-11,2026-02-08,2026-02-08,95646
+V02,Lindenhof Bearings AG,Bearings,2026-01-27,2026-02-24,2026-02-22,59608
+V02,Lindenhof Bearings AG,Bearings,2026-02-02,2026-03-02,2026-03-01,73312
+V02,Lindenhof Bearings AG,Bearings,2026-02-11,2026-03-11,2026-03-10,109290
+V02,Lindenhof Bearings AG,Bearings,2026-02-13,2026-03-13,2026-03-12,67566
+V02,Lindenhof Bearings AG,Bearings,2026-02-28,2026-03-28,2026-03-27,108767
+V02,Lindenhof Bearings AG,Bearings,2026-03-04,2026-04-01,2026-03-31,79589
+V02,Lindenhof Bearings AG,Bearings,2026-04-30,2026-05-28,2026-06-09,68266
+V02,Lindenhof Bearings AG,Bearings,2026-05-01,2026-05-29,2026-05-27,78721
+V02,Lindenhof Bearings AG,Bearings,2026-05-08,2026-06-05,2026-06-05,41887
+V02,Lindenhof Bearings AG,Bearings,2026-08-04,2026-09-01,2026-08-31,92267
+V02,Lindenhof Bearings AG,Bearings,2026-09-23,2026-10-21,2026-10-21,103568
+V03,Orion Seal Systems,Dry gas seals,2025-12-22,2026-02-12,2026-02-12,93372
+V03,Orion Seal Systems,Dry gas seals,2025-12-30,2026-02-20,2026-02-20,79390
+V03,Orion Seal Systems,Dry gas seals,2025-12-31,2026-02-21,2026-02-19,74066
+V03,Orion Seal Systems,Dry gas seals,2026-01-09,2026-03-02,2026-02-28,48775
+V03,Orion Seal Systems,Dry gas seals,2026-01-23,2026-03-16,2026-03-16,70645
+V03,Orion Seal Systems,Dry gas seals,2026-02-13,2026-04-06,2026-04-07,37683
+V03,Orion Seal Systems,Dry gas seals,2026-04-27,2026-06-18,2026-06-16,54552
+V03,Orion Seal Systems,Dry gas seals,2026-05-01,2026-06-22,2026-06-21,64353
+V03,Orion Seal Systems,Dry gas seals,2026-06-02,2026-07-24,2026-07-22,34660
+V03,Orion Seal Systems,Dry gas seals,2026-07-23,2026-09-13,2026-09-11,81778
+V03,Orion Seal Systems,Dry gas seals,2026-08-25,2026-10-16,2026-10-15,60942
+V04,Brenner Instruments GmbH,Transmitters,2026-01-08,2026-02-17,2026-02-24,52585
+V04,Brenner Instruments GmbH,Transmitters,2026-01-15,2026-02-24,2026-02-24,47061
+V04,Brenner Instruments GmbH,Transmitters,2026-01-24,2026-03-05,2026-03-03,61920
+V04,Brenner Instruments GmbH,Transmitters,2026-02-25,2026-04-06,2026-04-09,45901
+V04,Brenner Instruments GmbH,Transmitters,2026-04-16,2026-05-26,2026-05-24,57129
+V04,Brenner Instruments GmbH,Transmitters,2026-04-21,2026-05-31,2026-06-02,44891
+V04,Brenner Instruments GmbH,Transmitters,2026-06-15,2026-07-25,2026-07-27,40021
+V04,Brenner Instruments GmbH,Transmitters,2026-07-16,2026-08-25,2026-08-23,36270
+V04,Brenner Instruments GmbH,Transmitters,2026-08-17,2026-09-26,2026-10-02,51582
+V04,Brenner Instruments GmbH,Transmitters,2026-09-10,2026-10-20,2026-10-28,37249
+V05,Tallis Gear Works,Gears,2025-12-23,2026-02-06,2026-02-05,30373
+V05,Tallis Gear Works,Gears,2025-12-28,2026-02-11,2026-02-11,15240
+V05,Tallis Gear Works,Gears,2026-03-30,2026-05-14,2026-05-14,27196
+V05,Tallis Gear Works,Gears,2026-05-07,2026-06-21,2026-06-20,18177
+V05,Tallis Gear Works,Gears,2026-06-01,2026-07-16,2026-07-16,31814
+V05,Tallis Gear Works,Gears,2026-06-15,2026-07-30,2026-07-29,23839
+V05,Tallis Gear Works,Gears,2026-06-20,2026-08-04,2026-08-03,21798
+V05,Tallis Gear Works,Gears,2026-06-22,2026-08-06,2026-08-11,33022
+V05,Tallis Gear Works,Gears,2026-06-23,2026-08-07,2026-08-05,16315
+V05,Tallis Gear Works,Gears,2026-08-09,2026-09-23,2026-09-23,19478
+V05,Tallis Gear Works,Gears,2026-08-14,2026-09-28,2026-09-28,16050
+V05,Tallis Gear Works,Gears,2026-08-25,2026-10-09,2026-10-07,15889
+V05,Tallis Gear Works,Gears,2026-09-08,2026-10-23,2026-10-21,16586
+V06,Fjord Junction Boxes AS,Junction boxes,2025-12-22,2026-01-13,2026-01-13,10162
+V06,Fjord Junction Boxes AS,Junction boxes,2025-12-24,2026-01-15,2026-01-14,19505
+V06,Fjord Junction Boxes AS,Junction boxes,2026-03-02,2026-03-24,2026-03-25,20985
+V06,Fjord Junction Boxes AS,Junction boxes,2026-03-15,2026-04-06,2026-04-05,15242
+V06,Fjord Junction Boxes AS,Junction boxes,2026-03-17,2026-04-08,2026-04-06,11374
+V06,Fjord Junction Boxes AS,Junction boxes,2026-05-03,2026-05-25,2026-05-30,9381
+V06,Fjord Junction Boxes AS,Junction boxes,2026-05-21,2026-06-12,2026-06-10,20516
+V06,Fjord Junction Boxes AS,Junction boxes,2026-05-23,2026-06-14,2026-06-14,13184
+V06,Fjord Junction Boxes AS,Junction boxes,2026-07-09,2026-07-31,2026-07-31,16777
+V06,Fjord Junction Boxes AS,Junction boxes,2026-08-05,2026-08-27,2026-09-01,9941
+V06,Fjord Junction Boxes AS,Junction boxes,2026-09-28,2026-10-20,2026-10-20,14195
+V06,Fjord Junction Boxes AS,Junction boxes,2026-10-04,2026-10-26,2026-10-30,8716
+V07,Mavrik Precision Co,Machined parts,2026-02-09,2026-03-11,2026-03-09,16541
+V07,Mavrik Precision Co,Machined parts,2026-02-22,2026-03-24,2026-03-23,14344
+V07,Mavrik Precision Co,Machined parts,2026-03-04,2026-04-03,2026-04-03,12506
+V07,Mavrik Precision Co,Machined parts,2026-03-26,2026-04-25,2026-04-23,17691
+V07,Mavrik Precision Co,Machined parts,2026-04-07,2026-05-07,2026-05-06,13287
+V07,Mavrik Precision Co,Machined parts,2026-04-11,2026-05-11,2026-05-11,14660
+V07,Mavrik Precision Co,Machined parts,2026-05-08,2026-06-07,2026-06-07,9563
+V07,Mavrik Precision Co,Machined parts,2026-05-28,2026-06-27,2026-06-26,6692
+V07,Mavrik Precision Co,Machined parts,2026-08-16,2026-09-15,2026-09-13,17857
+V07,Mavrik Precision Co,Machined parts,2026-09-14,2026-10-14,2026-10-13,13293
+V08,Sunder Castings Pvt Ltd,Machined parts,2025-12-22,2026-01-29,2026-01-28,12502
+V08,Sunder Castings Pvt Ltd,Machined parts,2026-01-01,2026-02-08,2026-02-19,13260
+V08,Sunder Castings Pvt Ltd,Machined parts,2026-01-05,2026-02-12,2026-02-11,10197
+V08,Sunder Castings Pvt Ltd,Machined parts,2026-01-23,2026-03-02,2026-03-01,5748
+V08,Sunder Castings Pvt Ltd,Machined parts,2026-02-25,2026-04-04,2026-04-08,11489
+V08,Sunder Castings Pvt Ltd,Machined parts,2026-04-24,2026-06-01,2026-06-11,5637
+V08,Sunder Castings Pvt Ltd,Machined parts,2026-06-05,2026-07-13,2026-07-13,9386
+V08,Sunder Castings Pvt Ltd,Machined parts,2026-07-04,2026-08-11,2026-08-11,4836
+V08,Sunder Castings Pvt Ltd,Machined parts,2026-07-12,2026-08-19,2026-08-20,6991
+V08,Sunder Castings Pvt Ltd,Machined parts,2026-08-11,2026-09-18,2026-09-16,4842
+V09,Rhodes Fasteners BV,Fasteners,2025-12-22,2026-01-09,2026-01-09,5640
+V09,Rhodes Fasteners BV,Fasteners,2026-01-21,2026-02-08,2026-02-08,5696
+V09,Rhodes Fasteners BV,Fasteners,2026-02-22,2026-03-12,2026-03-10,6557
+V09,Rhodes Fasteners BV,Fasteners,2026-04-14,2026-05-02,2026-05-02,5308
+V09,Rhodes Fasteners BV,Fasteners,2026-05-27,2026-06-14,2026-06-14,4374
+V09,Rhodes Fasteners BV,Fasteners,2026-06-13,2026-07-01,2026-07-01,5896
+V09,Rhodes Fasteners BV,Fasteners,2026-07-29,2026-08-16,2026-08-16,7252
+V09,Rhodes Fasteners BV,Fasteners,2026-07-30,2026-08-17,2026-08-16,6036
+V09,Rhodes Fasteners BV,Fasteners,2026-08-06,2026-08-24,2026-08-24,7494
+V09,Rhodes Fasteners BV,Fasteners,2026-09-02,2026-09-20,2026-09-18,6155
+V09,Rhodes Fasteners BV,Fasteners,2026-09-17,2026-10-05,2026-10-05,5639
+V09,Rhodes Fasteners BV,Fasteners,2026-10-06,2026-10-24,2026-10-22,5412
+V10,Pelham Controls Oy,Transmitters,2026-01-16,2026-02-11,2026-02-09,1880
+V10,Pelham Controls Oy,Transmitters,2026-01-16,2026-02-11,2026-02-14,2969
+V10,Pelham Controls Oy,Transmitters,2026-01-20,2026-02-15,2026-02-17,3522
+V10,Pelham Controls Oy,Transmitters,2026-03-05,2026-03-31,2026-03-29,1917
+V10,Pelham Controls Oy,Transmitters,2026-04-20,2026-05-16,2026-05-15,1547
+V10,Pelham Controls Oy,Transmitters,2026-05-14,2026-06-09,2026-06-08,1968
+V10,Pelham Controls Oy,Transmitters,2026-06-19,2026-07-15,2026-07-13,3171
+V10,Pelham Controls Oy,Transmitters,2026-07-02,2026-07-28,2026-07-27,2272
+V10,Pelham Controls Oy,Transmitters,2026-07-16,2026-08-11,2026-08-12,2900
+V10,Pelham Controls Oy,Transmitters,2026-08-04,2026-08-30,2026-09-02,2813
+V10,Pelham Controls Oy,Transmitters,2026-08-31,2026-09-26,2026-09-24,2290
+V10,Pelham Controls Oy,Transmitters,2026-09-15,2026-10-11,2026-10-10,2969
+V10,Pelham Controls Oy,Transmitters,2026-10-03,2026-10-29,2026-10-27,2800
+V10,Pelham Controls Oy,Transmitters,2026-10-06,2026-11-01,2026-11-01,2480
