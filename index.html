@@ -1,116 +1,1245 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ABC-XYZ Supplier Segmentation and Expediting</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#eef0f2;--card:#fff;--ink:#1b2430;--mut:#5c6877;--line:#d5dae0;--red:#c62f2f;--amb:#a87300;--grn:#2f8a57;--blu:#2a5d9f;--redbg:#fbe6e6;--ambbg:#fdf1d3;--grnbg:#e2f3e8;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171d;--card:#1b222b;--ink:#e6eaef;--mut:#97a3b1;--line:#2d3743;--red:#ef6b6b;--amb:#e8b53a;--grn:#5cc88a;--blu:#6fa5e8;--redbg:#3a1f22;--ambbg:#3a2f14;--grnbg:#1b3327;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#12171d;--card:#1b222b;--ink:#e6eaef;--mut:#97a3b1;--line:#2d3743;--red:#ef6b6b;--amb:#e8b53a;--grn:#5cc88a;--blu:#6fa5e8;--redbg:#3a1f22;--ambbg:#3a2f14;--grnbg:#1b3327;color-scheme:dark}
-*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Barlow,system-ui,Arial,sans-serif}
-main{max-width:1200px;margin:0 auto;padding:18px 16px 40px}
-h1{font-size:26px;margin:0 0 2px}h2{font-size:17px;margin:0 0 8px;font-weight:600}
-.sub,.note{color:var(--mut)}.sub{margin:0 0 14px;max-width:80ch}.note{font-size:13px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin-bottom:14px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
-.k{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--blu);border-radius:4px;padding:10px 12px}
-.k b{display:block;font-size:28px;line-height:1.1}.k span{color:var(--mut);font-size:13px}
-.k.r{border-left-color:var(--red)}.k.g{border-left-color:var(--grn)}
-.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-.bar label{display:flex;gap:6px;align-items:center;color:var(--mut);font-size:14px}
-select,input[type=search]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:5px 8px}
-input[type=range]{width:130px}
-.mx{display:grid;grid-template-columns:70px repeat(3,minmax(0,1fr));gap:6px}
-.mh{font-weight:600;color:var(--mut);font-size:13px;display:flex;align-items:flex-end;padding:2px}
-.cell{border:2px solid transparent;border-radius:6px;padding:8px 9px;cursor:pointer;text-align:left;font:inherit;color:var(--ink)}
-.cell.g{background:var(--grnbg)}.cell.a{background:var(--ambbg)}.cell.r{background:var(--redbg)}.cell.e{background:var(--bg)}
-.cell.on{border-color:var(--ink)}
-.cell b{font-size:17px}.cell small{display:block;color:var(--mut);font-size:12.5px;line-height:1.3}
-.cell .p{font-size:12.5px;margin-top:3px}
-.wrap{overflow-x:auto;max-height:480px;overflow-y:auto}
-table{border-collapse:collapse;width:100%;font-size:14px}
-th{position:sticky;top:0;background:var(--card);text-align:left;color:var(--mut);font-weight:500;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
-tr.done td{opacity:.4}
-.pill{display:inline-block;padding:1px 9px;border-radius:10px;font-size:12.5px;font-weight:600}
-.pill.H{background:var(--redbg);color:var(--red)}.pill.M{background:var(--ambbg);color:var(--amb)}.pill.L{background:var(--grnbg);color:var(--grn)}
-.act{color:var(--mut);font-size:13px;min-width:190px}
-.seg{font-weight:700}
-</style></head><body><main>
-<h1>ABC-XYZ supplier segmentation and expediting</h1>
-<p class="sub">Suppliers are ranked by annual spend (ABC) and by lead-time variability (XYZ). Each segment gets its own follow-up routine, and open POs are ranked so you chase the ones most likely to be late and most costly first. Dummy data: 100 suppliers, 12 past deliveries each, 260 open POs.</p>
-<div class="kpis" id="kpis"></div>
-<div class="grid" style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px" id="g">
-<div class="card"><h2>Segment matrix</h2><div class="mx" id="mx"></div>
-<p class="note">Click a segment to filter the lists below. A = top 80% of spend, B = next 15%, C = last 5%. X = steady lead times, Y = some variation, Z = erratic. Colour shows on-time delivery of that segment: green 90% or more, amber 80-89%, red below 80%.</p></div>
-<div class="card"><h2>What-if: how much can expediting lift on-time delivery?</h2>
-<div class="bar"><label>POs I can chase now <input type="range" id="cap" min="5" max="120" value="30"><b id="capv"></b></label>
-<label>Chance a chase saves a late PO <input type="range" id="eff" min="10" max="80" value="50"><b id="effv"></b></label></div>
-<p class="note" id="wi" style="margin-top:10px"></p>
-<p class="note">Estimate only: each open PO’s lateness chance comes from its supplier’s past on-time rate, raised when the date is unconfirmed. Change the sliders to match your real capacity and success rate.</p></div></div>
-<div class="card"><div class="bar" style="margin-bottom:8px"><h2 style="margin:0">Expedite list</h2>
-<label>Priority <select id="fl"><option value="">All</option><option value="H">High</option><option value="M">Medium</option><option value="L">Low</option></select></label>
-<label>Commodity <select id="fc"><option value="">All</option></select></label>
-<input type="search" id="q" placeholder="Search PO or supplier"><span class="note" id="cnt"></span></div>
-<div class="wrap"><table><thead><tr><th>Chased</th><th>PO</th><th>Supplier</th><th>Segment</th><th>Value</th><th>Due in</th><th>Date confirmed</th><th>Late chance</th><th>Priority</th><th>What to do</th></tr></thead><tbody id="tb"></tbody></table></div></div>
-<div class="card"><h2 id="sh">Suppliers in the selected segment</h2><div class="wrap" style="max-height:320px"><table><thead><tr><th>Supplier</th><th>Commodity</th><th>Segment</th><th>Annual spend</th><th>On-time delivery</th><th>Lead-time variation</th><th>Open POs</th></tr></thead><tbody id="st"></tbody></table></div></div>
-<script>
-function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-const R=rng(77),ri=(a,b)=>Math.floor(a+R()*(b-a+1)),rf=(a,b)=>a+R()*(b-a);
-const COM=["Machined parts","Bearings","Dry gas seals","Transmitters","Junction boxes","Gears"];
-const PRE=["Alpha","Bharat","Delta","Euro","Hanse","Indo","Kraft","Nord","Prima","Rhein","Sigma","Tech","Uni","Vertex","West","Zenith"];
-const SUF=["Forge","Bearings","Engineering","Precision","Components","Industries","Seals","Metals"];
-const LEG=["GmbH","Pvt Ltd","Co"],XT=[.05,.10];
-const POL={AX:"Weekly status check; protect with long-term agreement",AY:"Follow up twice a week; get dates confirmed in writing",AZ:"Daily follow-up, escalate early, keep an alternate supplier ready",
-BX:"Check every two weeks",BY:"Weekly follow-up",BZ:"Follow up twice a week; escalate if unconfirmed",
-CX:"One reminder before the due date",CY:"Reminders 1 week and 2 days before due",CZ:"Weekly follow-up near due date; consider consolidating suppliers"};
-const SUP=[];
-for(let i=0;i<100;i++){const q=rf(.03,.45),sg=R(),lt=ri(20,60),h=[];let late=0;
-for(let k=0;k<12;k++){const l=R()<q;if(l)late++;h.push(lt+(l?ri(1,2+Math.round(sg*14)):0)+ri(-1,1))}
-const m=h.reduce((a,b)=>a+b)/12,sd=Math.sqrt(h.reduce((a,b)=>a+(b-m)**2,0)/12);
-SUP.push({id:i,name:PRE[i%16]+" "+SUF[Math.floor(i/16)]+" "+LEG[i%3],com:COM[i%6],spend:Math.round((Math.pow(R(),3)*8e6+6e4)/1e3)*1e3,otd:1-late/12,cov:sd/m})}
-const tot=SUP.reduce((a,s)=>a+s.spend,0);let cum=0;
-SUP.slice().sort((a,b)=>b.spend-a.spend).forEach(s=>{s.abc=cum/tot<.8?"A":cum/tot<.95?"B":"C";cum+=s.spend});
-SUP.forEach(s=>{s.xyz=s.cov<XT[0]?"X":s.cov<XT[1]?"Y":"Z";s.seg=s.abc+s.xyz});
-const PO=[];
-for(let n=0;n<260;n++){const s=SUP[ri(0,99)],due=ri(1,45),conf=R()<.5+.5*s.otd,val=Math.round(s.spend/12*rf(.4,1.6)/100)*100;
-const p=Math.min(.95,(1-s.otd)*(conf?1:1.4)+(!conf&&due<=7?.1:0));
-const w={A:1,B:.6,C:.3}[s.abc]*(due<=7?1.5:due<=14?1.2:1),sc=p*100*(.5+.5*w);
-PO.push({no:"45"+ri(10000,99999),s,due,conf,val,p,sc,lvl:sc>=48?"H":sc>=28?"M":"L"})}
-PO.sort((a,b)=>b.sc-a.sc);
-const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const eur=v=>"€"+(v>=1e6?(v/1e6).toFixed(2)+"M":Math.round(v/1e3)+"k");
-let SEG=null;const done=new Set();
-function act(o){if(o.lvl=="L")return"Routine: "+POL[o.s.seg].toLowerCase();
-return(o.conf?"":"Get the delivery date confirmed today. ")+(o.lvl=="H"?"Chase now: ask for priority production or expedited freight. ":"Follow up this week. ")+"Routine: "+POL[o.s.seg].toLowerCase()}
-function render(){
-const eff=+$("eff").value/100,cap=+$("cap").value;$("capv").textContent=cap;$("effv").textContent=Math.round(eff*100)+"%";
-const hist=SUP.reduce((a,s)=>a+s.otd,0)/100,sp=PO.reduce((a,o)=>a+o.p,0),base=1-sp/PO.length;
-const saved=PO.slice(0,cap).reduce((a,o)=>a+o.p,0)*eff,proj=1-(sp-saved)/PO.length;
-const hi=PO.filter(o=>o.lvl=="H");
-$("kpis").innerHTML=`<div class="k"><b>${(hist*100).toFixed(0)}%</b><span>Past on-time delivery (average supplier)</span></div><div class="k r"><b>${(base*100).toFixed(0)}%</b><span>Expected on-time rate of open POs</span></div><div class="k g"><b>${(proj*100).toFixed(0)}%</b><span>With expediting at your capacity</span></div><div class="k r"><b>${hi.length}</b><span>High-priority POs to chase</span></div><div class="k"><b>${eur(hi.reduce((a,o)=>a+o.val,0))}</b><span>Value of high-priority POs</span></div>`;
-$("wi").innerHTML=`Chasing the top <b>${cap}</b> POs could move expected on-time delivery from <b>${(base*100).toFixed(1)}%</b> to <b>${(proj*100).toFixed(1)}%</b> (about ${saved.toFixed(1)} fewer late POs).`;
-let m=`<div></div>`+["X: steady","Y: some variation","Z: erratic"].map(t=>`<div class="mh">${t}</div>`).join("");
-["A","B","C"].forEach(a=>{m+=`<div class="mh">${a}: ${{A:"top spend",B:"mid spend",C:"low spend"}[a]}</div>`;
-["X","Y","Z"].forEach(x=>{const g=SUP.filter(s=>s.seg==a+x),k=a+x;
-if(!g.length){m+=`<div class="cell e"><b>${k}</b><small>No suppliers</small></div>`;return}
-const o=g.reduce((t,s)=>t+s.otd,0)/g.length,sh=g.reduce((t,s)=>t+s.spend,0)/tot;
-m+=`<button class="cell ${o>=.9?"g":o>=.8?"a":"r"}${SEG==k?" on":""}" data-k="${k}"><b>${k}</b><small>${g.length} suppliers, ${(sh*100).toFixed(0)}% of spend</small><small>On-time ${(o*100).toFixed(0)}%</small><div class="p">${POL[k]}</div></button>`})});
-$("mx").innerHTML=m;
-document.querySelectorAll(".cell[data-k]").forEach(b=>b.onclick=()=>{SEG=SEG==b.dataset.k?null:b.dataset.k;render()});
-const fl=$("fl").value,fc=$("fc").value,q=$("q").value.toLowerCase();
-const rows=PO.filter(o=>(!SEG||o.s.seg==SEG)&&(!fl||o.lvl==fl)&&(!fc||o.s.com==fc)&&(!q||o.no.includes(q)||o.s.name.toLowerCase().includes(q)));
-$("cnt").textContent=rows.length+" POs";
-const lab={H:"High",M:"Medium",L:"Low"};
-$("tb").innerHTML=rows.length?rows.map(o=>`<tr class="${done.has(o.no)?"done":""}"><td><input type="checkbox" data-po="${o.no}" ${done.has(o.no)?"checked":""} aria-label="Mark ${o.no} as chased"></td><td>${o.no}</td><td>${esc(o.s.name)}</td><td class="seg">${o.s.seg}</td><td>${eur(o.val)}</td><td>${o.due} days</td><td>${o.conf?"Yes":"No"}</td><td>${Math.round(o.p*100)}%</td><td><span class="pill ${o.lvl}">${lab[o.lvl]}</span></td><td class="act">${act(o)}</td></tr>`).join(""):`<tr><td colspan="10" class="note">No POs match. Clear a filter or pick another segment.</td></tr>`;
-document.querySelectorAll("input[data-po]").forEach(c=>c.onchange=()=>{c.checked?done.add(c.dataset.po):done.delete(c.dataset.po);render()});
-const ss=SUP.filter(s=>!SEG||s.seg==SEG).sort((a,b)=>b.spend-a.spend);
-$("sh").textContent=SEG?"Suppliers in segment "+SEG:"All suppliers (click a segment to narrow)";
-$("st").innerHTML=ss.map(s=>`<tr><td>${esc(s.name)}</td><td>${s.com}</td><td class="seg">${s.seg}</td><td>${eur(s.spend)}</td><td>${Math.round(s.otd*100)}%</td><td>${(s.cov*100).toFixed(1)}%</td><td>${PO.filter(o=>o.s==s).length}</td></tr>`).join("")}
-COM.forEach(c=>$("fc").insertAdjacentHTML("beforeend",`<option>${c}</option>`));
-["fl","fc","cap","eff"].forEach(i=>$(i).oninput=render);$("q").oninput=render;
-if(window.matchMedia&&matchMedia("(max-width:900px)").matches)$("g").style.gridTemplateColumns="1fr";
-if(typeof window!=="undefined")render();
-</script></main></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>ABC-XYZ Supplier Segmentation and Expediting</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #eef0f2;
+        --card: #fff;
+        --ink: #1b2430;
+        --mut: #5c6877;
+        --line: #d5dae0;
+        --red: #c62f2f;
+        --amb: #a87300;
+        --grn: #2f8a57;
+        --blu: #2a5d9f;
+        --redbg: #fbe6e6;
+        --ambbg: #fdf1d3;
+        --grnbg: #e2f3e8;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        color-scheme: light;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #12171d;
+          --card: #1b222b;
+          --ink: #e6eaef;
+          --mut: #97a3b1;
+          --line: #2d3743;
+          --red: #ef6b6b;
+          --amb: #e8b53a;
+          --grn: #5cc88a;
+          --blu: #6fa5e8;
+          --redbg: #3a1f22;
+          --ambbg: #3a2f14;
+          --grnbg: #1b3327;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #12171d;
+        --card: #1b222b;
+        --ink: #e6eaef;
+        --mut: #97a3b1;
+        --line: #2d3743;
+        --red: #ef6b6b;
+        --amb: #e8b53a;
+        --grn: #5cc88a;
+        --blu: #6fa5e8;
+        --redbg: #3a1f22;
+        --ambbg: #3a2f14;
+        --grnbg: #1b3327;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          15px/1.45 Barlow,
+          system-ui,
+          Arial,
+          sans-serif;
+      }
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 18px 16px 40px;
+      }
+      h1 {
+        font-size: 26px;
+        margin: 0 0 2px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0 0 8px;
+        font-weight: 600;
+      }
+      .sub,
+      .note {
+        color: var(--mut);
+      }
+      .sub {
+        margin: 0 0 14px;
+        max-width: 80ch;
+      }
+      .note {
+        font-size: 13px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+      }
+      .kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .k {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--blu);
+        border-radius: 4px;
+        padding: 10px 12px;
+      }
+      .k b {
+        display: block;
+        font-size: 28px;
+        line-height: 1.1;
+      }
+      .k span {
+        color: var(--mut);
+        font-size: 13px;
+      }
+      .k.r {
+        border-left-color: var(--red);
+      }
+      .k.g {
+        border-left-color: var(--grn);
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .bar label {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        color: var(--mut);
+        font-size: 14px;
+      }
+      select,
+      input[type="search"] {
+        font: inherit;
+        color: var(--ink);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 5px 8px;
+      }
+      input[type="range"] {
+        width: 130px;
+      }
+      .mx {
+        display: grid;
+        grid-template-columns: 70px repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .mh {
+        font-weight: 600;
+        color: var(--mut);
+        font-size: 13px;
+        display: flex;
+        align-items: flex-end;
+        padding: 2px;
+      }
+      .cell {
+        border: 2px solid transparent;
+        border-radius: 6px;
+        padding: 8px 9px;
+        cursor: pointer;
+        text-align: left;
+        font: inherit;
+        color: var(--ink);
+      }
+      .cell.g {
+        background: var(--grnbg);
+      }
+      .cell.a {
+        background: var(--ambbg);
+      }
+      .cell.r {
+        background: var(--redbg);
+      }
+      .cell.e {
+        background: var(--bg);
+      }
+      .cell.on {
+        border-color: var(--ink);
+      }
+      .cell b {
+        font-size: 17px;
+      }
+      .cell small {
+        display: block;
+        color: var(--mut);
+        font-size: 12.5px;
+        line-height: 1.3;
+      }
+      .cell .p {
+        font-size: 12.5px;
+        margin-top: 3px;
+      }
+      .wrap {
+        overflow-x: auto;
+        max-height: 480px;
+        overflow-y: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+      }
+      th {
+        position: sticky;
+        top: 0;
+        background: var(--card);
+        text-align: left;
+        color: var(--mut);
+        font-weight: 500;
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      td {
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      tr.done td {
+        opacity: 0.4;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 9px;
+        border-radius: 10px;
+        font-size: 12.5px;
+        font-weight: 600;
+      }
+      .pill.H {
+        background: var(--redbg);
+        color: var(--red);
+      }
+      .pill.M {
+        background: var(--ambbg);
+        color: var(--amb);
+      }
+      .pill.L {
+        background: var(--grnbg);
+        color: var(--grn);
+      }
+      .act {
+        color: var(--mut);
+        font-size: 13px;
+        min-width: 190px;
+      }
+      .seg {
+        font-weight: 700;
+      }
+      .set {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 8px;
+      }
+      .set label {
+        display: flex;
+        flex-direction: column;
+        font-size: 13px;
+        color: var(--mut);
+      }
+      .set input,
+      input[type="date"] {
+        font: inherit;
+        color: var(--ink);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 5px 8px;
+        width: 100%;
+      }
+      .msg {
+        font-size: 14px;
+        margin: 8px 0 0;
+      }
+      .msg.err {
+        color: var(--red);
+      }
+      input[type="file"] {
+        font: inherit;
+        font-size: 13px;
+        max-width: 230px;
+      }
+      code {
+        background: var(--bg);
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 13px;
+      }
+      .tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+      .tabs button {
+        font: inherit;
+        padding: 7px 18px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .tabs button.on {
+        background: var(--ink);
+        color: var(--card);
+        border-color: var(--ink);
+      }
+      .btn {
+        font: inherit;
+        font-size: 13.5px;
+        padding: 5px 11px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .btn.p {
+        background: var(--blu);
+        color: #fff;
+        border-color: var(--blu);
+      }
+      .btn.d {
+        color: var(--red);
+      }
+      td input,
+      td select {
+        font: inherit;
+        font-size: 13px;
+        color: var(--ink);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 3px 5px;
+        width: 100%;
+        min-width: 95px;
+      }
+      td.ac {
+        white-space: nowrap;
+      }
+      tr.add td {
+        background: var(--ambbg);
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>ABC-XYZ supplier segmentation and expediting</h1>
+      <p class="sub">
+        Suppliers are segmented by spend (ABC) and lead-time variability (XYZ),
+        and open POs are ranked so you chase the most likely late and most
+        costly first. Add, edit and delete the underlying data in the Data tab;
+        the dashboard updates immediately.
+      </p>
+      <div class="tabs">
+        <button id="t1" class="on">Dashboard</button
+        ><button id="t2">Data</button>
+      </div>
+      <section id="s1">
+        <div class="card">
+          <div class="bar">
+            <label>As-of date <input type="date" id="asof" /></label
+            ><span class="msg" id="msg" style="margin: 0"></span>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Settings</h2>
+          <div class="set">
+            <label
+              >A: top share of spend (%)<input
+                type="number"
+                id="ca"
+                value="80"
+                min="1"
+                max="99"
+            /></label>
+            <label
+              >A+B: cumulative spend (%)<input
+                type="number"
+                id="cb"
+                value="95"
+                min="2"
+                max="99"
+            /></label>
+            <label
+              >X below lead-time variation (%)<input
+                type="number"
+                id="cx"
+                value="5"
+                step="0.5"
+            /></label>
+            <label
+              >Y below lead-time variation (%)<input
+                type="number"
+                id="cy"
+                value="10"
+                step="0.5"
+            /></label>
+            <label
+              >High priority from score<input type="number" id="ch" value="48"
+            /></label>
+            <label
+              >Medium priority from score<input
+                type="number"
+                id="cm"
+                value="28"
+            /></label>
+          </div>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <div
+          id="g"
+          style="
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+            gap: 14px;
+          "
+        >
+          <div class="card">
+            <h2>Segment matrix</h2>
+            <div class="mx" id="mx"></div>
+            <p class="note">
+              Click a segment to filter the lists below. Colour shows on-time
+              delivery: green 90% or more, amber 80-89%, red below 80%.
+              Suppliers with fewer than 3 deliveries are placed in Z.
+            </p>
+          </div>
+          <div class="card">
+            <h2>What-if: how much can expediting lift on-time delivery?</h2>
+            <div class="bar">
+              <label
+                >POs I can chase now
+                <input type="range" id="cap" min="5" max="120" value="30" /><b
+                  id="capv"
+                ></b
+              ></label>
+              <label
+                >Chance a chase saves a late PO
+                <input type="range" id="eff" min="10" max="80" value="50" /><b
+                  id="effv"
+                ></b
+              ></label>
+            </div>
+            <p class="note" id="wi" style="margin-top: 10px"></p>
+            <p class="note">
+              Estimate only: each open PO’s lateness chance comes from its
+              supplier’s past on-time rate, raised when the date is unconfirmed.
+            </p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="bar" style="margin-bottom: 8px">
+            <h2 style="margin: 0">Expedite list</h2>
+            <label
+              >Priority
+              <select id="fl">
+                <option value="">All</option>
+                <option value="H">High</option>
+                <option value="M">Medium</option>
+                <option value="L">Low</option>
+              </select></label
+            >
+            <label
+              >Commodity
+              <select id="fc">
+                <option value="">All</option>
+              </select></label
+            >
+            <input
+              type="search"
+              id="q"
+              placeholder="Search PO or supplier"
+            /><span class="note" id="cnt"></span>
+          </div>
+          <div class="wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Chased</th>
+                  <th>PO</th>
+                  <th>Supplier</th>
+                  <th>Segment</th>
+                  <th>Value</th>
+                  <th>Due</th>
+                  <th>Date confirmed</th>
+                  <th>Late chance</th>
+                  <th>Priority</th>
+                  <th>What to do</th>
+                </tr>
+              </thead>
+              <tbody id="tb"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <h2 id="sh">Suppliers</h2>
+          <div class="wrap" style="max-height: 320px">
+            <table>
+              <thead>
+                <tr>
+                  <th>Supplier</th>
+                  <th>Commodity</th>
+                  <th>Segment</th>
+                  <th>Spend in data</th>
+                  <th>On-time delivery</th>
+                  <th>Lead-time variation</th>
+                  <th>Deliveries</th>
+                  <th>Open POs</th>
+                </tr>
+              </thead>
+              <tbody id="st"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <section id="s2" hidden>
+        <div class="card">
+          <h2>Data</h2>
+          <p class="note">
+            Rows you add, edit or delete here are saved in this browser and
+            update the dashboard right away. Export a CSV to back it up, or to
+            replace the CSV files in the repository so everyone sees the same
+            data.
+          </p>
+          <div class="bar" style="margin: 10px 0 8px">
+            <button class="btn p" id="vd">Deliveries</button
+            ><button class="btn" id="vp">Open POs</button
+            ><input type="search" id="dq" placeholder="Search rows" /><button
+              class="btn p"
+              id="dadd"
+            >
+              + Add row
+            </button>
+          </div>
+          <div class="bar">
+            <label
+              >Import CSV
+              <input type="file" id="dfile" accept=".csv,text/csv" /></label
+            ><label
+              >Mode
+              <select id="dmode">
+                <option value="r">Replace this table</option>
+                <option value="a">Add to this table</option>
+              </select></label
+            ><button class="btn" id="dexp">Export CSV</button
+            ><button class="btn d" id="drst">
+              Reset to repository CSV files
+            </button>
+          </div>
+          <p class="msg" id="dmsg"></p>
+          <div class="wrap" style="max-height: 560px; margin-top: 8px">
+            <table>
+              <thead id="dh"></thead>
+              <tbody id="db"></tbody>
+            </table>
+          </div>
+          <div class="bar" style="margin-top: 8px">
+            <button class="btn" id="dpv">Previous</button
+            ><span class="note" id="dpg"></span
+            ><button class="btn" id="dnx">Next</button>
+          </div>
+          <datalist id="sids"></datalist>
+        </div>
+      </section>
+      <script>
+        const POL = {
+          AX: "Weekly status check; protect with long-term agreement",
+          AY: "Follow up twice a week; get dates confirmed in writing",
+          AZ: "Daily follow-up, escalate early, keep an alternate supplier ready",
+          BX: "Check every two weeks",
+          BY: "Weekly follow-up",
+          BZ: "Follow up twice a week; escalate if unconfirmed",
+          CX: "One reminder before the due date",
+          CY: "Reminders 1 week and 2 days before due",
+          CZ: "Weekly follow-up near due date; consider consolidating suppliers",
+        };
+        const $ = (id) => document.getElementById(id),
+          esc = (s) =>
+            String(s).replace(
+              /[&<>"]/g,
+              (c) =>
+                ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+            );
+        const eur = (v) =>
+          "€" +
+          (v >= 1e6
+            ? (v / 1e6).toFixed(2) + "M"
+            : v >= 1e3
+              ? Math.round(v / 1e3) + "k"
+              : Math.round(v));
+        const SK = "supplier_dashboard_v1",
+          DC = [
+            "supplier_id",
+            "supplier_name",
+            "commodity",
+            "order_date",
+            "promised_date",
+            "actual_date",
+            "po_value",
+          ],
+          PC = [
+            "po_number",
+            "supplier_id",
+            "po_value",
+            "due_date",
+            "date_confirmed",
+          ];
+        let RAW = { d: [], p: [] },
+          DEL = [],
+          POS = [],
+          SUP = [],
+          PO = [],
+          SKIP = 0,
+          SEG = null,
+          TOT = 1,
+          VIEW = "d",
+          PAGE = 0,
+          EDIT = null,
+          ADD = false;
+        const done = new Set();
+        function csv(t) {
+          const rows = [];
+          let r = [],
+            f = "",
+            q = false;
+          t = t.replace(/^\uFEFF/, "");
+          for (let i = 0; i < t.length; i++) {
+            const c = t[i];
+            if (q) {
+              if (c == '"') {
+                if (t[i + 1] == '"') {
+                  f += '"';
+                  i++;
+                } else q = false;
+              } else f += c;
+            } else if (c == '"') q = true;
+            else if (c == "," || c == ";") {
+              r.push(f);
+              f = "";
+            } else if (c == "\n" || c == "\r") {
+              if (c == "\r" && t[i + 1] == "\n") i++;
+              r.push(f);
+              f = "";
+              if (r.some((x) => x.trim() !== "")) rows.push(r);
+              r = [];
+            } else f += c;
+          }
+          r.push(f);
+          if (r.some((x) => x.trim() !== "")) rows.push(r);
+          if (!rows.length) return [];
+          const h = rows[0].map((x) => x.trim().toLowerCase());
+          return rows.slice(1).map((a) => {
+            const o = {};
+            h.forEach((k, i) => (o[k] = (a[i] || "").trim()));
+            return o;
+          });
+        }
+        function day(s) {
+          s = String(s || "").trim();
+          let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+          if (m) return Date.UTC(+m[1], m[2] - 1, +m[3]) / 864e5;
+          m = s.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})/);
+          return m ? Date.UTC(+m[3], m[2] - 1, +m[1]) / 864e5 : NaN;
+        }
+        const num = (s) =>
+            parseFloat(String(s).replace(/[\s€]/g, "").replace(/,/g, "")),
+          iso = (d) => new Date(d * 864e5).toISOString().slice(0, 10),
+          mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+        const t = (v) => String(v == null ? "" : v).trim();
+        function cleanD(r) {
+          const o = {
+              supplier_id: t(r.supplier_id),
+              supplier_name: t(r.supplier_name),
+              commodity: t(r.commodity),
+            },
+            a = day(r.order_date),
+            b = day(r.promised_date),
+            c = day(r.actual_date),
+            v = num(r.po_value);
+          if (!o.supplier_id || isNaN(a + b + c + v) || c < a) return null;
+          o.order_date = iso(a);
+          o.promised_date = iso(b);
+          o.actual_date = iso(c);
+          o.po_value = v;
+          return o;
+        }
+        function cleanP(r) {
+          const o = {
+              po_number: t(r.po_number),
+              supplier_id: t(r.supplier_id),
+            },
+            v = num(r.po_value),
+            d = day(r.due_date);
+          if (!o.po_number || !o.supplier_id || isNaN(v + d)) return null;
+          o.po_value = v;
+          o.due_date = iso(d);
+          o.date_confirmed = /^(y|j|t|1|x)/i.test(t(r.date_confirmed))
+            ? "yes"
+            : "no";
+          return o;
+        }
+        function save() {
+          try {
+            localStorage.setItem(SK, JSON.stringify(RAW));
+            return true;
+          } catch (e) {
+            dmsg(
+              "Could not save in this browser. Export a CSV to keep your changes.",
+              1,
+            );
+            return false;
+          }
+        }
+        function dmsg(x, err) {
+          $("dmsg").textContent = x;
+          $("dmsg").className = "msg" + (err ? " err" : "");
+        }
+        function msg(x, err) {
+          $("msg").textContent = x;
+          $("msg").className = "msg" + (err ? " err" : "");
+        }
+        function changed() {
+          save();
+          compute();
+          renderData();
+        }
+        function compute() {
+          const c = {
+            a: +$("ca").value / 100,
+            b: +$("cb").value / 100,
+            x: +$("cx").value / 100,
+            y: +$("cy").value / 100,
+            h: +$("ch").value,
+            m: +$("cm").value,
+          };
+          DEL = RAW.d.map((r) => ({
+            id: r.supplier_id,
+            name: r.supplier_name || r.supplier_id,
+            com: r.commodity || "-",
+            ord: day(r.order_date),
+            pro: day(r.promised_date),
+            act: day(r.actual_date),
+            val: +r.po_value,
+          }));
+          POS = RAW.p.map((r) => ({
+            no: r.po_number,
+            id: r.supplier_id,
+            val: +r.po_value,
+            due: day(r.due_date),
+            conf: r.date_confirmed == "yes",
+          }));
+          const asof = day($("asof").value),
+            by = {};
+          DEL.forEach((r) => {
+            const s = (by[r.id] = by[r.id] || {
+              id: r.id,
+              name: r.name,
+              com: r.com,
+              spend: 0,
+              n: 0,
+              late: 0,
+              lt: [],
+            });
+            s.spend += r.val;
+            s.n++;
+            if (r.act > r.pro) s.late++;
+            s.lt.push(r.act - r.ord);
+          });
+          SUP = Object.values(by);
+          TOT = SUP.reduce((a, s) => a + s.spend, 0) || 1;
+          SUP.forEach((s) => {
+            s.otd = 1 - s.late / s.n;
+            const m = mean(s.lt),
+              sd = Math.sqrt(mean(s.lt.map((v) => (v - m) ** 2)));
+            s.cov = m > 0 ? sd / m : 0;
+            s.xyz = s.n < 3 ? "Z" : s.cov < c.x ? "X" : s.cov < c.y ? "Y" : "Z";
+          });
+          let cum = 0;
+          SUP.slice()
+            .sort((a, b) => b.spend - a.spend)
+            .forEach((s) => {
+              s.abc = cum / TOT < c.a ? "A" : cum / TOT < c.b ? "B" : "C";
+              cum += s.spend;
+            });
+          SUP.forEach((s) => (s.seg = s.abc + s.xyz));
+          const mp = {};
+          SUP.forEach((s) => (mp[s.id] = s));
+          PO = [];
+          SKIP = 0;
+          POS.forEach((r) => {
+            const s = mp[r.id];
+            if (!s) {
+              SKIP++;
+              return;
+            }
+            const due = Math.round(r.due - asof);
+            const p = Math.min(
+                0.95,
+                (1 - s.otd) * (r.conf ? 1 : 1.4) +
+                  (!r.conf && due <= 7 ? 0.1 : 0),
+              ),
+              w =
+                { A: 1, B: 0.6, C: 0.3 }[s.abc] *
+                (due <= 7 ? 1.5 : due <= 14 ? 1.2 : 1),
+              sc = p * 100 * (0.5 + 0.5 * w);
+            PO.push({
+              no: r.no,
+              s,
+              due,
+              conf: r.conf,
+              val: r.val,
+              p,
+              sc,
+              lvl: sc >= c.h ? "H" : sc >= c.m ? "M" : "L",
+            });
+          });
+          PO.sort((a, b) => b.sc - a.sc);
+          const cm = [...new Set(SUP.map((s) => s.com))].sort(),
+            cur = $("fc").value;
+          $("fc").innerHTML =
+            '<option value="">All</option>' +
+            cm
+              .map(
+                (x) =>
+                  `<option${x == cur ? " selected" : ""}>${esc(x)}</option>`,
+              )
+              .join("");
+          msg(
+            RAW.d.length
+              ? `${DEL.length} deliveries, ${SUP.length} suppliers, ${PO.length} open POs.` +
+                  (SKIP
+                    ? ` ${SKIP} open POs skipped: supplier_id has no deliveries.`
+                    : "")
+              : "No data yet. Open the Data tab to import or add rows.",
+            SKIP > 0 || !RAW.d.length,
+          );
+          render();
+        }
+        function act(o) {
+          if (o.lvl == "L") return "Routine: " + POL[o.s.seg].toLowerCase();
+          return (
+            (o.conf ? "" : "Get the delivery date confirmed today. ") +
+            (o.lvl == "H"
+              ? "Chase now: ask for priority production or expedited freight. "
+              : "Follow up this week. ") +
+            "Routine: " +
+            POL[o.s.seg].toLowerCase()
+          );
+        }
+        function render() {
+          const eff = +$("eff").value / 100,
+            cap = +$("cap").value;
+          $("capv").textContent = cap;
+          $("effv").textContent = Math.round(eff * 100) + "%";
+          const nd = DEL.length || 1,
+            hist = DEL.length
+              ? 1 - DEL.filter((r) => r.act > r.pro).length / nd
+              : 0,
+            sp = PO.reduce((a, o) => a + o.p, 0),
+            np = PO.length || 1,
+            base = 1 - sp / np;
+          const saved = PO.slice(0, cap).reduce((a, o) => a + o.p, 0) * eff,
+            proj = 1 - (sp - saved) / np,
+            hi = PO.filter((o) => o.lvl == "H");
+          $("kpis").innerHTML =
+            `<div class="k"><b>${(hist * 100).toFixed(0)}%</b><span>Past on-time delivery (all deliveries)</span></div><div class="k r"><b>${(base * 100).toFixed(0)}%</b><span>Expected on-time rate of open POs</span></div><div class="k g"><b>${(proj * 100).toFixed(0)}%</b><span>With expediting at your capacity</span></div><div class="k r"><b>${hi.length}</b><span>High-priority POs to chase</span></div><div class="k"><b>${eur(hi.reduce((a, o) => a + o.val, 0))}</b><span>Value of high-priority POs</span></div>`;
+          $("wi").innerHTML = PO.length
+            ? `Chasing the top <b>${cap}</b> POs could move expected on-time delivery from <b>${(base * 100).toFixed(1)}%</b> to <b>${(proj * 100).toFixed(1)}%</b> (about ${saved.toFixed(1)} fewer late POs).`
+            : "No open POs loaded yet.";
+          let m =
+            `<div></div>` +
+            ["X: steady", "Y: some variation", "Z: erratic"]
+              .map((t) => `<div class="mh">${t}</div>`)
+              .join("");
+          ["A", "B", "C"].forEach((a) => {
+            m += `<div class="mh">${a}: ${{ A: "top spend", B: "mid spend", C: "low spend" }[a]}</div>`;
+            ["X", "Y", "Z"].forEach((x) => {
+              const g = SUP.filter((s) => s.seg == a + x),
+                k = a + x;
+              if (!g.length) {
+                m += `<div class="cell e"><b>${k}</b><small>No suppliers</small></div>`;
+                return;
+              }
+              const o = g.reduce((t, s) => t + s.otd, 0) / g.length,
+                sh = g.reduce((t, s) => t + s.spend, 0) / TOT;
+              m += `<button class="cell ${o >= 0.9 ? "g" : o >= 0.8 ? "a" : "r"}${SEG == k ? " on" : ""}" data-k="${k}"><b>${k}</b><small>${g.length} suppliers, ${(sh * 100).toFixed(0)}% of spend</small><small>On-time ${(o * 100).toFixed(0)}%</small><div class="p">${POL[k]}</div></button>`;
+            });
+          });
+          $("mx").innerHTML = m;
+          document.querySelectorAll(".cell[data-k]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                SEG = SEG == b.dataset.k ? null : b.dataset.k;
+                render();
+              }),
+          );
+          const fl = $("fl").value,
+            fc = $("fc").value,
+            q = $("q").value.toLowerCase();
+          const rows = PO.filter(
+            (o) =>
+              (!SEG || o.s.seg == SEG) &&
+              (!fl || o.lvl == fl) &&
+              (!fc || o.s.com == fc) &&
+              (!q ||
+                String(o.no).toLowerCase().includes(q) ||
+                o.s.name.toLowerCase().includes(q)),
+          );
+          $("cnt").textContent = rows.length + " POs";
+          const lab = { H: "High", M: "Medium", L: "Low" };
+          $("tb").innerHTML = rows.length
+            ? rows
+                .map(
+                  (o) =>
+                    `<tr class="${done.has(o.no) ? "done" : ""}"><td><input type="checkbox" data-po="${esc(o.no)}" ${done.has(o.no) ? "checked" : ""} aria-label="Mark ${esc(o.no)} as chased"></td><td>${esc(o.no)}</td><td>${esc(o.s.name)}</td><td class="seg">${o.s.seg}</td><td>${eur(o.val)}</td><td>${o.due < 0 ? "overdue " + -o.due + " d" : o.due + " days"}</td><td>${o.conf ? "Yes" : "No"}</td><td>${Math.round(o.p * 100)}%</td><td><span class="pill ${o.lvl}">${lab[o.lvl]}</span></td><td class="act">${act(o)}</td></tr>`,
+                )
+                .join("")
+            : `<tr><td colspan="10" class="note">No POs to show. Add data in the Data tab, or clear a filter.</td></tr>`;
+          document.querySelectorAll("input[data-po]").forEach(
+            (c) =>
+              (c.onchange = () => {
+                c.checked ? done.add(c.dataset.po) : done.delete(c.dataset.po);
+                render();
+              }),
+          );
+          const cnt = {};
+          PO.forEach((o) => (cnt[o.s.id] = (cnt[o.s.id] || 0) + 1));
+          $("sh").textContent = SEG
+            ? "Suppliers in segment " + SEG
+            : "All suppliers (click a segment to narrow)";
+          $("st").innerHTML = SUP.filter((s) => !SEG || s.seg == SEG)
+            .sort((a, b) => b.spend - a.spend)
+            .map(
+              (s) =>
+                `<tr><td>${esc(s.name)}</td><td>${esc(s.com)}</td><td class="seg">${s.seg}</td><td>${eur(s.spend)}</td><td>${Math.round(s.otd * 100)}%</td><td>${(s.cov * 100).toFixed(1)}%</td><td>${s.n}</td><td>${cnt[s.id] || 0}</td></tr>`,
+            )
+            .join("");
+        }
+        /* ---------- Data tab (CRUD) ---------- */
+        function fld(c, v) {
+          v = v == null ? "" : v;
+          const a = `data-c="${c}" `;
+          if (c.endsWith("_date"))
+            return `<input type="date" ${a}value="${esc(v)}">`;
+          if (c == "po_value")
+            return `<input type="number" step="any" min="0" ${a}value="${esc(v)}">`;
+          if (c == "date_confirmed")
+            return `<select ${a}><option${v == "yes" ? " selected" : ""}>yes</option><option${v != "yes" ? " selected" : ""}>no</option></select>`;
+          return `<input type="text" ${a}value="${esc(v)}"${c == "supplier_id" ? ' list="sids"' : ""}>`;
+        }
+        function renderData() {
+          const cols = VIEW == "d" ? DC : PC,
+            rows = VIEW == "d" ? RAW.d : RAW.p,
+            q = $("dq").value.toLowerCase(),
+            idx = [];
+          rows.forEach((r, i) => {
+            if (!q || cols.some((c) => String(r[c]).toLowerCase().includes(q)))
+              idx.push(i);
+          });
+          const PS = 50,
+            pages = Math.max(1, Math.ceil(idx.length / PS));
+          PAGE = Math.min(PAGE, pages - 1);
+          const sl = idx.slice(PAGE * PS, PAGE * PS + PS);
+          $("sids").innerHTML = [...new Set(RAW.d.map((r) => r.supplier_id))]
+            .map((x) => `<option value="${esc(x)}">`)
+            .join("");
+          $("dh").innerHTML =
+            "<tr><th>#</th>" +
+            cols.map((c) => `<th>${c}</th>`).join("") +
+            "<th>Actions</th></tr>";
+          let h = "";
+          if (ADD)
+            h += `<tr class="add"><td>new</td>${cols.map((c) => `<td>${fld(c, c == "date_confirmed" ? "no" : "")}</td>`).join("")}<td class="ac"><button class="btn p" data-a="add">Add</button> <button class="btn" data-a="canceladd">Cancel</button></td></tr>`;
+          sl.forEach((i) => {
+            const r = rows[i];
+            h +=
+              EDIT === i
+                ? `<tr data-i="${i}"><td>${i + 1}</td>${cols.map((c) => `<td>${fld(c, r[c])}</td>`).join("")}<td class="ac"><button class="btn p" data-a="save">Save</button> <button class="btn" data-a="cancel">Cancel</button></td></tr>`
+                : `<tr data-i="${i}"><td>${i + 1}</td>${cols.map((c) => `<td>${esc(r[c])}</td>`).join("")}<td class="ac"><button class="btn" data-a="edit">Edit</button> <button class="btn d" data-a="del">Delete</button></td></tr>`;
+          });
+          $("db").innerHTML =
+            h ||
+            `<tr><td colspan="${cols.length + 2}" class="note">No rows. Click "+ Add row" or import a CSV.</td></tr>`;
+          $("dpg").textContent =
+            `${idx.length ? PAGE * PS + 1 : 0}-${Math.min(idx.length, PAGE * PS + PS)} of ${idx.length} rows` +
+            (q ? " (filtered)" : "");
+          $("dpv").disabled = PAGE == 0;
+          $("dnx").disabled = PAGE >= pages - 1;
+          $("vd").className = "btn" + (VIEW == "d" ? " p" : "");
+          $("vp").className = "btn" + (VIEW == "p" ? " p" : "");
+        }
+        function readRow(tr) {
+          const o = {};
+          tr.querySelectorAll("[data-c]").forEach(
+            (e) => (o[e.dataset.c] = e.value),
+          );
+          if (VIEW == "d") {
+            const c = cleanD(o);
+            if (!c) return null;
+            const k = RAW.d.find((r) => r.supplier_id == c.supplier_id);
+            if (k) {
+              c.supplier_name = c.supplier_name || k.supplier_name;
+              c.commodity = c.commodity || k.commodity;
+            }
+            return c;
+          }
+          return cleanP(o);
+        }
+        $("db").onclick = (e) => {
+          const b = e.target.closest("button");
+          if (!b) return;
+          const a = b.dataset.a,
+            tr = b.closest("tr"),
+            i = +tr.dataset.i,
+            L = VIEW == "d" ? RAW.d : RAW.p;
+          if (a == "edit") {
+            EDIT = i;
+            ADD = false;
+            renderData();
+          } else if (a == "cancel") {
+            EDIT = null;
+            renderData();
+          } else if (a == "canceladd") {
+            ADD = false;
+            renderData();
+          } else if (a == "del") {
+            if (confirm("Delete this row?")) {
+              L.splice(i, 1);
+              dmsg("Row deleted.");
+              changed();
+            }
+          } else if (a == "save" || a == "add") {
+            const c = readRow(tr);
+            if (!c) {
+              dmsg(
+                VIEW == "d"
+                  ? "Check the row: supplier id, valid dates (actual date not before order date) and a numeric value are required."
+                  : "Check the row: PO number, supplier id, due date and a numeric value are required.",
+                1,
+              );
+              return;
+            }
+            if (a == "save") {
+              L[i] = c;
+              EDIT = null;
+            } else {
+              L.unshift(c);
+              ADD = false;
+              PAGE = 0;
+            }
+            dmsg(
+              VIEW == "p" && !RAW.d.some((r) => r.supplier_id == c.supplier_id)
+                ? "Saved. This supplier_id has no deliveries yet, so the PO is skipped on the dashboard until you add some."
+                : "Saved.",
+              VIEW == "p" && !RAW.d.some((r) => r.supplier_id == c.supplier_id),
+            );
+            changed();
+          }
+        };
+        $("vd").onclick = () => {
+          VIEW = "d";
+          PAGE = 0;
+          EDIT = null;
+          ADD = false;
+          renderData();
+        };
+        $("vp").onclick = () => {
+          VIEW = "p";
+          PAGE = 0;
+          EDIT = null;
+          ADD = false;
+          renderData();
+        };
+        $("dadd").onclick = () => {
+          ADD = true;
+          EDIT = null;
+          PAGE = 0;
+          renderData();
+        };
+        $("dq").oninput = () => {
+          PAGE = 0;
+          renderData();
+        };
+        $("dpv").onclick = () => {
+          PAGE--;
+          renderData();
+        };
+        $("dnx").onclick = () => {
+          PAGE++;
+          renderData();
+        };
+        $("dfile").onchange = (e) => {
+          const f = e.target.files[0];
+          if (!f) return;
+          const r = new FileReader();
+          r.onload = () => {
+            const raw = csv(r.result),
+              cl = raw.map(VIEW == "d" ? cleanD : cleanP).filter(Boolean),
+              bad = raw.length - cl.length;
+            if (!cl.length) {
+              dmsg(
+                "No valid rows found. Check the column names and date formats.",
+                1,
+              );
+              return;
+            }
+            if (
+              $("dmode").value == "r" &&
+              !confirm(
+                "Replace all current rows in this table with " +
+                  cl.length +
+                  " imported rows?",
+              )
+            )
+              return;
+            if ($("dmode").value == "r") RAW[VIEW] = cl;
+            else RAW[VIEW] = RAW[VIEW].concat(cl);
+            dmsg(
+              cl.length +
+                " rows imported." +
+                (bad
+                  ? " " + bad + " rows skipped (missing or invalid values)."
+                  : ""),
+              bad > 0,
+            );
+            PAGE = 0;
+            changed();
+          };
+          r.readAsText(f);
+          e.target.value = "";
+        };
+        $("dexp").onclick = () => {
+          const cols = VIEW == "d" ? DC : PC,
+            q = (v) =>
+              /[",\n;]/.test(v) ? '"' + String(v).replace(/"/g, '""') + '"' : v;
+          const txt =
+            cols.join(",") +
+            "\n" +
+            (VIEW == "d" ? RAW.d : RAW.p)
+              .map((r) => cols.map((c) => q(r[c])).join(","))
+              .join("\n") +
+            "\n";
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(new Blob([txt], { type: "text/csv" }));
+          a.download = (VIEW == "d" ? "deliveries" : "open_pos") + ".csv";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        };
+        async function seed() {
+          const [a, b] = await Promise.all([
+            fetch("deliveries.csv"),
+            fetch("open_pos.csv"),
+          ]);
+          if (!a.ok || !b.ok) throw 0;
+          RAW.d = csv(await a.text())
+            .map(cleanD)
+            .filter(Boolean);
+          RAW.p = csv(await b.text())
+            .map(cleanP)
+            .filter(Boolean);
+        }
+        $("drst").onclick = async () => {
+          if (
+            !confirm(
+              "Discard all changes in this browser and reload deliveries.csv and open_pos.csv from the site?",
+            )
+          )
+            return;
+          try {
+            await seed();
+            dmsg("Reset to the repository CSV files.");
+            changed();
+          } catch (e) {
+            dmsg("Could not read the CSV files from the site.", 1);
+          }
+        };
+        /* ---------- tabs and start ---------- */
+        function tab(n) {
+          $("s1").hidden = n != 1;
+          $("s2").hidden = n != 2;
+          $("t1").className = n == 1 ? "on" : "";
+          $("t2").className = n == 2 ? "on" : "";
+          if (n == 2) renderData();
+        }
+        $("t1").onclick = () => tab(1);
+        $("t2").onclick = () => tab(2);
+        ["fl", "fc", "cap", "eff"].forEach((i) => ($(i).oninput = render));
+        $("q").oninput = render;
+        ["ca", "cb", "cx", "cy", "ch", "cm", "asof"].forEach(
+          (i) => ($(i).onchange = compute),
+        );
+        const t0 = new Date();
+        $("asof").value =
+          t0.getFullYear() +
+          "-" +
+          String(t0.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(t0.getDate()).padStart(2, "0");
+        if (window.matchMedia && matchMedia("(max-width:900px)").matches)
+          $("g").style.gridTemplateColumns = "1fr";
+        (async () => {
+          let st = null;
+          try {
+            st = JSON.parse(localStorage.getItem(SK));
+          } catch (e) {}
+          if (st && Array.isArray(st.d) && Array.isArray(st.p)) RAW = st;
+          else {
+            try {
+              await seed();
+              save();
+            } catch (e) {}
+          }
+          compute();
+          renderData();
+        })();
+      </script>
+    </main>
+  </body>
+</html>
