@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ABC-XYZ Supplier Segmentation and Expediting</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef0f2;--card:#fff;--ink:#1b2430;--mut:#5c6877;--line:#d5dae0;--red:#c62f2f;--amb:#a87300;--grn:#2f8a57;--blu:#2a5d9f;--redbg:#fbe6e6;--ambbg:#fdf1d3;--grnbg:#e2f3e8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171d;--card:#1b222b;--ink:#e6eaef;--mut:#97a3b1;--line:#2d3743;--red:#ef6b6b;--amb:#e8b53a;--grn:#5cc88a;--blu:#6fa5e8;--redbg:#3a1f22;--ambbg:#3a2f14;--grnbg:#1b3327;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12171d;--card:#1b222b;--ink:#e6eaef;--mut:#97a3b1;--line:#2d3743;--red:#ef6b6b;--amb:#e8b53a;--grn:#5cc88a;--blu:#6fa5e8;--redbg:#3a1f22;--ambbg:#3a2f14;--grnbg:#1b3327;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Barlow,system-ui,Arial,sans-serif}
+main{max-width:1200px;margin:0 auto;padding:18px 16px 40px}
+h1{font-size:26px;margin:0 0 2px}h2{font-size:17px;margin:0 0 8px;font-weight:600}
+.sub,.note{color:var(--mut)}.sub{margin:0 0 14px;max-width:80ch}.note{font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.k{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--blu);border-radius:4px;padding:10px 12px}
+.k b{display:block;font-size:28px;line-height:1.1}.k span{color:var(--mut);font-size:13px}
+.k.r{border-left-color:var(--red)}.k.g{border-left-color:var(--grn)}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.bar label{display:flex;gap:6px;align-items:center;color:var(--mut);font-size:14px}
+select,input[type=search]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:5px 8px}
+input[type=range]{width:130px}
+.mx{display:grid;grid-template-columns:70px repeat(3,minmax(0,1fr));gap:6px}
+.mh{font-weight:600;color:var(--mut);font-size:13px;display:flex;align-items:flex-end;padding:2px}
+.cell{border:2px solid transparent;border-radius:6px;padding:8px 9px;cursor:pointer;text-align:left;font:inherit;color:var(--ink)}
+.cell.g{background:var(--grnbg)}.cell.a{background:var(--ambbg)}.cell.r{background:var(--redbg)}.cell.e{background:var(--bg)}
+.cell.on{border-color:var(--ink)}
+.cell b{font-size:17px}.cell small{display:block;color:var(--mut);font-size:12.5px;line-height:1.3}
+.cell .p{font-size:12.5px;margin-top:3px}
+.wrap{overflow-x:auto;max-height:480px;overflow-y:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{position:sticky;top:0;background:var(--card);text-align:left;color:var(--mut);font-weight:500;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr.done td{opacity:.4}
+.pill{display:inline-block;padding:1px 9px;border-radius:10px;font-size:12.5px;font-weight:600}
+.pill.H{background:var(--redbg);color:var(--red)}.pill.M{background:var(--ambbg);color:var(--amb)}.pill.L{background:var(--grnbg);color:var(--grn)}
+.act{color:var(--mut);font-size:13px;min-width:190px}
+.seg{font-weight:700}
+</style></head><body><main>
+<h1>ABC-XYZ supplier segmentation and expediting</h1>
+<p class="sub">Suppliers are ranked by annual spend (ABC) and by lead-time variability (XYZ). Each segment gets its own follow-up routine, and open POs are ranked so you chase the ones most likely to be late and most costly first. Dummy data: 100 suppliers, 12 past deliveries each, 260 open POs.</p>
+<div class="kpis" id="kpis"></div>
+<div class="grid" style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px" id="g">
+<div class="card"><h2>Segment matrix</h2><div class="mx" id="mx"></div>
+<p class="note">Click a segment to filter the lists below. A = top 80% of spend, B = next 15%, C = last 5%. X = steady lead times, Y = some variation, Z = erratic. Colour shows on-time delivery of that segment: green 90% or more, amber 80-89%, red below 80%.</p></div>
+<div class="card"><h2>What-if: how much can expediting lift on-time delivery?</h2>
+<div class="bar"><label>POs I can chase now <input type="range" id="cap" min="5" max="120" value="30"><b id="capv"></b></label>
+<label>Chance a chase saves a late PO <input type="range" id="eff" min="10" max="80" value="50"><b id="effv"></b></label></div>
+<p class="note" id="wi" style="margin-top:10px"></p>
+<p class="note">Estimate only: each open PO’s lateness chance comes from its supplier’s past on-time rate, raised when the date is unconfirmed. Change the sliders to match your real capacity and success rate.</p></div></div>
+<div class="card"><div class="bar" style="margin-bottom:8px"><h2 style="margin:0">Expedite list</h2>
+<label>Priority <select id="fl"><option value="">All</option><option value="H">High</option><option value="M">Medium</option><option value="L">Low</option></select></label>
+<label>Commodity <select id="fc"><option value="">All</option></select></label>
+<input type="search" id="q" placeholder="Search PO or supplier"><span class="note" id="cnt"></span></div>
+<div class="wrap"><table><thead><tr><th>Chased</th><th>PO</th><th>Supplier</th><th>Segment</th><th>Value</th><th>Due in</th><th>Date confirmed</th><th>Late chance</th><th>Priority</th><th>What to do</th></tr></thead><tbody id="tb"></tbody></table></div></div>
+<div class="card"><h2 id="sh">Suppliers in the selected segment</h2><div class="wrap" style="max-height:320px"><table><thead><tr><th>Supplier</th><th>Commodity</th><th>Segment</th><th>Annual spend</th><th>On-time delivery</th><th>Lead-time variation</th><th>Open POs</th></tr></thead><tbody id="st"></tbody></table></div></div>
+<script>
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const R=rng(77),ri=(a,b)=>Math.floor(a+R()*(b-a+1)),rf=(a,b)=>a+R()*(b-a);
+const COM=["Machined parts","Bearings","Dry gas seals","Transmitters","Junction boxes","Gears"];
+const PRE=["Alpha","Bharat","Delta","Euro","Hanse","Indo","Kraft","Nord","Prima","Rhein","Sigma","Tech","Uni","Vertex","West","Zenith"];
+const SUF=["Forge","Bearings","Engineering","Precision","Components","Industries","Seals","Metals"];
+const LEG=["GmbH","Pvt Ltd","Co"],XT=[.05,.10];
+const POL={AX:"Weekly status check; protect with long-term agreement",AY:"Follow up twice a week; get dates confirmed in writing",AZ:"Daily follow-up, escalate early, keep an alternate supplier ready",
+BX:"Check every two weeks",BY:"Weekly follow-up",BZ:"Follow up twice a week; escalate if unconfirmed",
+CX:"One reminder before the due date",CY:"Reminders 1 week and 2 days before due",CZ:"Weekly follow-up near due date; consider consolidating suppliers"};
+const SUP=[];
+for(let i=0;i<100;i++){const q=rf(.03,.45),sg=R(),lt=ri(20,60),h=[];let late=0;
+for(let k=0;k<12;k++){const l=R()<q;if(l)late++;h.push(lt+(l?ri(1,2+Math.round(sg*14)):0)+ri(-1,1))}
+const m=h.reduce((a,b)=>a+b)/12,sd=Math.sqrt(h.reduce((a,b)=>a+(b-m)**2,0)/12);
+SUP.push({id:i,name:PRE[i%16]+" "+SUF[Math.floor(i/16)]+" "+LEG[i%3],com:COM[i%6],spend:Math.round((Math.pow(R(),3)*8e6+6e4)/1e3)*1e3,otd:1-late/12,cov:sd/m})}
+const tot=SUP.reduce((a,s)=>a+s.spend,0);let cum=0;
+SUP.slice().sort((a,b)=>b.spend-a.spend).forEach(s=>{s.abc=cum/tot<.8?"A":cum/tot<.95?"B":"C";cum+=s.spend});
+SUP.forEach(s=>{s.xyz=s.cov<XT[0]?"X":s.cov<XT[1]?"Y":"Z";s.seg=s.abc+s.xyz});
+const PO=[];
+for(let n=0;n<260;n++){const s=SUP[ri(0,99)],due=ri(1,45),conf=R()<.5+.5*s.otd,val=Math.round(s.spend/12*rf(.4,1.6)/100)*100;
+const p=Math.min(.95,(1-s.otd)*(conf?1:1.4)+(!conf&&due<=7?.1:0));
+const w={A:1,B:.6,C:.3}[s.abc]*(due<=7?1.5:due<=14?1.2:1),sc=p*100*(.5+.5*w);
+PO.push({no:"45"+ri(10000,99999),s,due,conf,val,p,sc,lvl:sc>=48?"H":sc>=28?"M":"L"})}
+PO.sort((a,b)=>b.sc-a.sc);
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const eur=v=>"€"+(v>=1e6?(v/1e6).toFixed(2)+"M":Math.round(v/1e3)+"k");
+let SEG=null;const done=new Set();
+function act(o){if(o.lvl=="L")return"Routine: "+POL[o.s.seg].toLowerCase();
+return(o.conf?"":"Get the delivery date confirmed today. ")+(o.lvl=="H"?"Chase now: ask for priority production or expedited freight. ":"Follow up this week. ")+"Routine: "+POL[o.s.seg].toLowerCase()}
+function render(){
+const eff=+$("eff").value/100,cap=+$("cap").value;$("capv").textContent=cap;$("effv").textContent=Math.round(eff*100)+"%";
+const hist=SUP.reduce((a,s)=>a+s.otd,0)/100,sp=PO.reduce((a,o)=>a+o.p,0),base=1-sp/PO.length;
+const saved=PO.slice(0,cap).reduce((a,o)=>a+o.p,0)*eff,proj=1-(sp-saved)/PO.length;
+const hi=PO.filter(o=>o.lvl=="H");
+$("kpis").innerHTML=`<div class="k"><b>${(hist*100).toFixed(0)}%</b><span>Past on-time delivery (average supplier)</span></div><div class="k r"><b>${(base*100).toFixed(0)}%</b><span>Expected on-time rate of open POs</span></div><div class="k g"><b>${(proj*100).toFixed(0)}%</b><span>With expediting at your capacity</span></div><div class="k r"><b>${hi.length}</b><span>High-priority POs to chase</span></div><div class="k"><b>${eur(hi.reduce((a,o)=>a+o.val,0))}</b><span>Value of high-priority POs</span></div>`;
+$("wi").innerHTML=`Chasing the top <b>${cap}</b> POs could move expected on-time delivery from <b>${(base*100).toFixed(1)}%</b> to <b>${(proj*100).toFixed(1)}%</b> (about ${saved.toFixed(1)} fewer late POs).`;
+let m=`<div></div>`+["X: steady","Y: some variation","Z: erratic"].map(t=>`<div class="mh">${t}</div>`).join("");
+["A","B","C"].forEach(a=>{m+=`<div class="mh">${a}: ${{A:"top spend",B:"mid spend",C:"low spend"}[a]}</div>`;
+["X","Y","Z"].forEach(x=>{const g=SUP.filter(s=>s.seg==a+x),k=a+x;
+if(!g.length){m+=`<div class="cell e"><b>${k}</b><small>No suppliers</small></div>`;return}
+const o=g.reduce((t,s)=>t+s.otd,0)/g.length,sh=g.reduce((t,s)=>t+s.spend,0)/tot;
+m+=`<button class="cell ${o>=.9?"g":o>=.8?"a":"r"}${SEG==k?" on":""}" data-k="${k}"><b>${k}</b><small>${g.length} suppliers, ${(sh*100).toFixed(0)}% of spend</small><small>On-time ${(o*100).toFixed(0)}%</small><div class="p">${POL[k]}</div></button>`})});
+$("mx").innerHTML=m;
+document.querySelectorAll(".cell[data-k]").forEach(b=>b.onclick=()=>{SEG=SEG==b.dataset.k?null:b.dataset.k;render()});
+const fl=$("fl").value,fc=$("fc").value,q=$("q").value.toLowerCase();
+const rows=PO.filter(o=>(!SEG||o.s.seg==SEG)&&(!fl||o.lvl==fl)&&(!fc||o.s.com==fc)&&(!q||o.no.includes(q)||o.s.name.toLowerCase().includes(q)));
+$("cnt").textContent=rows.length+" POs";
+const lab={H:"High",M:"Medium",L:"Low"};
+$("tb").innerHTML=rows.length?rows.map(o=>`<tr class="${done.has(o.no)?"done":""}"><td><input type="checkbox" data-po="${o.no}" ${done.has(o.no)?"checked":""} aria-label="Mark ${o.no} as chased"></td><td>${o.no}</td><td>${esc(o.s.name)}</td><td class="seg">${o.s.seg}</td><td>${eur(o.val)}</td><td>${o.due} days</td><td>${o.conf?"Yes":"No"}</td><td>${Math.round(o.p*100)}%</td><td><span class="pill ${o.lvl}">${lab[o.lvl]}</span></td><td class="act">${act(o)}</td></tr>`).join(""):`<tr><td colspan="10" class="note">No POs match. Clear a filter or pick another segment.</td></tr>`;
+document.querySelectorAll("input[data-po]").forEach(c=>c.onchange=()=>{c.checked?done.add(c.dataset.po):done.delete(c.dataset.po);render()});
+const ss=SUP.filter(s=>!SEG||s.seg==SEG).sort((a,b)=>b.spend-a.spend);
+$("sh").textContent=SEG?"Suppliers in segment "+SEG:"All suppliers (click a segment to narrow)";
+$("st").innerHTML=ss.map(s=>`<tr><td>${esc(s.name)}</td><td>${s.com}</td><td class="seg">${s.seg}</td><td>${eur(s.spend)}</td><td>${Math.round(s.otd*100)}%</td><td>${(s.cov*100).toFixed(1)}%</td><td>${PO.filter(o=>o.s==s).length}</td></tr>`).join("")}
+COM.forEach(c=>$("fc").insertAdjacentHTML("beforeend",`<option>${c}</option>`));
+["fl","fc","cap","eff"].forEach(i=>$(i).oninput=render);$("q").oninput=render;
+if(window.matchMedia&&matchMedia("(max-width:900px)").matches)$("g").style.gridTemplateColumns="1fr";
+if(typeof window!=="undefined")render();
+</script></main></body></html>
